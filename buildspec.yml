@@ -1,0 +1,41 @@
+version: 0.2
+
+env:
+  variables:
+    # Plain env vars (non-secret)
+    APP_ENV: "dev"
+  parameter-store:
+    # Example: fetch RDS endpoint or DB password from SSM
+    DB_ENDPOINT: "/devops/rds/endpoint"
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+      java: corretto17
+    commands:
+      - echo "Install dependencies (OS/package managers) if needed"
+  pre_build:
+    commands:
+      - echo "Pre-checks, unit test setup"
+  build:
+    commands:
+      - echo "Build step: transpile, compile, bundle, replace placeholders"
+      - sed -i "s|\${devopsdb.cvsum604mt2o.us-east-1.rds.amazonaws.com}|$devopsdb.cvsum604mt2o.us-east-1.rds.amazonaws.com|g" index.html
+  post_build:
+    commands:
+      - echo "Post build: zipping, metadata, prepare deployable artifacts"
+      - zip -r build-output.zip index.html appspec.yml scripts/
+
+artifacts:
+  files:
+    - index.html
+    - appspec.yml
+    - scripts/**/*
+  discard-paths: no
+  # base-directory: dist   # (optional) If your build output is in a subfolder, set this.
+
+cache:
+  paths:
+    - 'node_modules/**/*'
+    - '.m2/**/*'  # Maven cache example
