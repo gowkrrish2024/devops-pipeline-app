@@ -1,0 +1,10 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - sed -i "s|\${devopsdb.cvsum604mt2o.us-east-1.rds.amazonaws.com}|$devopsdb.cvsum604mt2o.us-east-1.rds.amazonaws.com|g" index.html
+
+artifacts:
+  files:
+    - index.html
